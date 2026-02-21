@@ -1,0 +1,10 @@
+services:
+  superannuation-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blk-superannuation-iti-dargar
+    ports:
+      - "5477:5477"
+    environment:
+      - PORT=5477

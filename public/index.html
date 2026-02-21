@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Superannuation API Console</title>
+    <style>
+      :root {
+        --paper: #f9f4e9;
+        --mist: #dcecff;
+        --ink: #1f2a37;
+        --accent: #e36f47;
+        --accent-2: #2f6f8f;
+        --card: rgba(255, 255, 255, 0.82);
+        --border: rgba(31, 42, 55, 0.16);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 8% 8%, rgba(227, 111, 71, 0.2), transparent 35%),
+          radial-gradient(circle at 90% 18%, rgba(47, 111, 143, 0.22), transparent 33%),
+          linear-gradient(130deg, var(--paper) 0%, var(--mist) 100%);
+        padding: 28px;
+      }
+
+      .shell {
+        max-width: 1120px;
+        margin: 0 auto;
+        display: grid;
+        gap: 18px;
+      }
+
+      .title-box {
+        backdrop-filter: blur(4px);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 16px 34px rgba(31, 42, 55, 0.08);
+        animation: lift 520ms ease-out;
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino", "Times New Roman", serif;
+        letter-spacing: 0.2px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin-top: 9px;
+        opacity: 0.8;
+      }
+
+      .layout {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: 1.08fr 1fr;
+      }
+
+      .panel {
+        backdrop-filter: blur(5px);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: 0 12px 28px rgba(31, 42, 55, 0.1);
+        animation: lift 650ms ease-out;
+      }
+
+      .panel h2 {
+        margin: 0 0 14px;
+        font-family: "Iowan Old Style", "Palatino", "Times New Roman", serif;
+      }
+
+      .row {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.15px;
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid rgba(31, 42, 55, 0.2);
+        background: rgba(255, 255, 255, 0.78);
+        border-radius: 12px;
+        padding: 11px 12px;
+        color: var(--ink);
+      }
+
+      textarea {
+        min-height: 300px;
+        resize: vertical;
+        font-family: "Menlo", "Monaco", "Consolas", monospace;
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+
+      .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: transform 140ms ease, filter 140ms ease;
+      }
+
+      .primary {
+        background: linear-gradient(120deg, var(--accent), #f09b6c);
+        color: white;
+        font-weight: 700;
+      }
+
+      .secondary {
+        background: rgba(47, 111, 143, 0.14);
+        color: var(--accent-2);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+      }
+
+      .meta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+      }
+
+      .chip {
+        background: rgba(31, 42, 55, 0.07);
+        border-radius: 999px;
+        padding: 5px 10px;
+      }
+
+      .ok {
+        background: rgba(47, 143, 84, 0.17);
+        color: #146839;
+      }
+
+      .warn {
+        background: rgba(227, 111, 71, 0.2);
+        color: #7b341e;
+      }
+
+      .stats {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat {
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+
+      .stat-label {
+        font-size: 0.78rem;
+        opacity: 0.75;
+      }
+
+      .stat-value {
+        margin-top: 4px;
+        font-size: 0.98rem;
+        font-weight: 700;
+      }
+
+      pre {
+        margin: 12px 0 0;
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(31, 42, 55, 0.94);
+        color: #f2f6fa;
+        max-height: 530px;
+        overflow: auto;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .hint {
+        font-size: 0.86rem;
+        opacity: 0.8;
+      }
+
+      @keyframes lift {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 920px) {
+        body {
+          padding: 16px;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        textarea {
+          min-height: 240px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="title-box">
+        <h1>Superannuation API Console</h1>
+        <div class="subtitle">Run `parse`, `validator`, `filter`, `returns:nps`, `returns:index`, and `performance` directly from localhost.</div>
+      </section>
+
+      <section class="layout">
+        <section class="panel">
+          <h2>Request</h2>
+
+          <div class="row">
+            <label for="baseUrl">Base URL</label>
+            <input id="baseUrl" />
+          </div>
+
+          <div class="row">
+            <label for="endpoint">Endpoint</label>
+            <select id="endpoint"></select>
+          </div>
+
+          <div class="row">
+            <label for="payload">JSON Payload</label>
+            <textarea id="payload"></textarea>
+            <div class="hint" id="payloadHint"></div>
+          </div>
+
+          <div class="buttons">
+            <button class="primary" id="sendBtn">Send Request</button>
+            <button class="secondary" id="sampleBtn">Load Sample</button>
+            <button class="secondary" id="clearBtn">Clear</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Response</h2>
+          <div class="meta">
+            <div class="chip" id="methodChip">Method: -</div>
+            <div class="chip" id="statusChip">Status: -</div>
+            <div class="chip" id="latencyChip">Latency: -</div>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-label">Transactions Total</div>
+              <div class="stat-value" id="transactionsTotalAmount">-</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">Savings Total</div>
+              <div class="stat-value" id="transactionsTotalRemanent">-</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">K Ranges</div>
+              <div class="stat-value" id="kRangeCount">-</div>
+            </div>
+          </div>
+          <pre id="responseView">Ready.</pre>
+          <div class="buttons" style="margin-top: 10px;">
+            <button class="secondary" id="copyBtn">Copy Response</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const endpoints = {
+        "/blackrock/challenge/v1/transactions:parse": {
+          method: "POST",
+          payload: {
+            expenses: [
+              { timestamp: "2023-10-12 20:15:00", amount: 250 },
+              { timestamp: "2023-02-28 15:49:00", amount: 375 },
+              { timestamp: "2023-07-01 21:59:00", amount: 620 },
+              { timestamp: "2023-12-17 08:09:00", amount: 480 }
+            ]
+          }
+        },
+        "/blackrock/challenge/v1/transactions:validator": {
+          method: "POST",
+          payload: {
+            wage: 50000,
+            transactions: [
+              { timestamp: "2023-10-12 20:15:00", amount: 250, ceiling: 300, remanent: 50 },
+              { timestamp: "2023-02-28 15:49:00", amount: 375, ceiling: 400, remanent: 25 },
+              { timestamp: "2023-07-01 21:59:00", amount: 620, ceiling: 700, remanent: 80 },
+              { timestamp: "2023-12-17 08:09:00", amount: 480, ceiling: 500, remanent: 20 }
+            ]
+          }
+        },
+        "/blackrock/challenge/v1/transactions:filter": {
+          method: "POST",
+          payload: {
+            transactions: [
+              { timestamp: "2023-10-12 20:15:00", amount: 250, ceiling: 300, remanent: 50 },
+              { timestamp: "2023-02-28 15:49:00", amount: 375, ceiling: 400, remanent: 25 },
+              { timestamp: "2023-07-01 21:59:00", amount: 620, ceiling: 700, remanent: 80 },
+              { timestamp: "2023-12-17 08:09:00", amount: 480, ceiling: 500, remanent: 20 }
+            ],
+            q: [
+              { fixed: 0, start: "2023-07-01 00:00:00", end: "2023-07-31 23:59:59" }
+            ],
+            p: [
+              { extra: 25, start: "2023-10-01 08:00:00", end: "2023-12-31 19:59:59" }
+            ],
+            k: [
+              { start: "2023-03-01 00:00:00", end: "2023-11-30 23:59:59" },
+              { start: "2023-01-01 00:00:00", end: "2023-12-31 23:59:59" }
+            ]
+          }
+        },
+        "/blackrock/challenge/v1/returns:nps": {
+          method: "POST",
+          payload: {
+            age: 29,
+            wage: 50000,
+            inflation: 5.5,
+            transactions: [
+              { timestamp: "2023-10-12 20:15:00", amount: 250, ceiling: 300, remanent: 50 },
+              { timestamp: "2023-02-28 15:49:00", amount: 375, ceiling: 400, remanent: 25 },
+              { timestamp: "2023-07-01 21:59:00", amount: 620, ceiling: 700, remanent: 80 },
+              { timestamp: "2023-12-17 08:09:00", amount: 480, ceiling: 500, remanent: 20 }
+            ],
+            q: [
+              { fixed: 0, start: "2023-07-01 00:00:00", end: "2023-07-31 23:59:59" }
+            ],
+            p: [
+              { extra: 25, start: "2023-10-01 08:00:00", end: "2023-12-31 19:59:59" }
+            ],
+            k: [
+              { start: "2023-03-01 00:00:00", end: "2023-11-30 23:59:59" },
+              { start: "2023-01-01 00:00:00", end: "2023-12-31 23:59:59" }
+            ]
+          }
+        },
+        "/blackrock/challenge/v1/returns:index": {
+          method: "POST",
+          payload: {
+            age: 29,
+            wage: 50000,
+            inflation: 5.5,
+            transactions: [
+              { timestamp: "2023-10-12 20:15:00", amount: 250, ceiling: 300, remanent: 50 },
+              { timestamp: "2023-02-28 15:49:00", amount: 375, ceiling: 400, remanent: 25 },
+              { timestamp: "2023-07-01 21:59:00", amount: 620, ceiling: 700, remanent: 80 },
+              { timestamp: "2023-12-17 08:09:00", amount: 480, ceiling: 500, remanent: 20 }
+            ],
+            q: [
+              { fixed: 0, start: "2023-07-01 00:00:00", end: "2023-07-31 23:59:59" }
+            ],
+            p: [
+              { extra: 25, start: "2023-10-01 08:00:00", end: "2023-12-31 19:59:59" }
+            ],
+            k: [
+              { start: "2023-03-01 00:00:00", end: "2023-11-30 23:59:59" },
+              { start: "2023-01-01 00:00:00", end: "2023-12-31 23:59:59" }
+            ]
+          }
+        },
+        "/blackrock/challenge/v1/performance": {
+          method: "GET",
+          payload: null
+        }
+      };
+
+      const baseUrlEl = document.getElementById("baseUrl");
+      const endpointEl = document.getElementById("endpoint");
+      const payloadEl = document.getElementById("payload");
+      const payloadHintEl = document.getElementById("payloadHint");
+      const sendBtn = document.getElementById("sendBtn");
+      const sampleBtn = document.getElementById("sampleBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const copyBtn = document.getElementById("copyBtn");
+      const responseView = document.getElementById("responseView");
+      const methodChip = document.getElementById("methodChip");
+      const statusChip = document.getElementById("statusChip");
+      const latencyChip = document.getElementById("latencyChip");
+      const transactionsTotalAmountEl = document.getElementById("transactionsTotalAmount");
+      const transactionsTotalRemanentEl = document.getElementById("transactionsTotalRemanent");
+      const kRangeCountEl = document.getElementById("kRangeCount");
+
+      baseUrlEl.value = window.location.origin;
+
+      Object.keys(endpoints).forEach((path) => {
+        const option = document.createElement("option");
+        option.value = path;
+        option.textContent = path;
+        endpointEl.appendChild(option);
+      });
+
+      function updatePayloadFromEndpoint() {
+        const selected = endpointEl.value;
+        const config = endpoints[selected];
+
+        methodChip.textContent = `Method: ${config.method}`;
+        statusChip.textContent = "Status: -";
+        statusChip.classList.remove("ok", "warn");
+        latencyChip.textContent = "Latency: -";
+
+        if (config.method === "GET") {
+          payloadEl.value = "";
+          payloadEl.disabled = true;
+          payloadHintEl.textContent = "No payload required for this endpoint.";
+        } else {
+          payloadEl.disabled = false;
+          payloadEl.value = JSON.stringify(config.payload, null, 2);
+          payloadHintEl.textContent = "Edit payload as needed before sending.";
+        }
+      }
+
+      function updateResponseStats(parsed) {
+        const totalAmount = parsed?.transactionsTotalAmount;
+        const totalRemanent = parsed?.transactionsTotalRemanent;
+        const kRangeCount = Array.isArray(parsed?.savingsByDates) ? parsed.savingsByDates.length : "-";
+
+        transactionsTotalAmountEl.textContent = totalAmount ?? "-";
+        transactionsTotalRemanentEl.textContent = totalRemanent ?? "-";
+        kRangeCountEl.textContent = kRangeCount;
+      }
+
+      async function sendRequest() {
+        const path = endpointEl.value;
+        const config = endpoints[path];
+        const base = baseUrlEl.value.trim().replace(/\/$/, "");
+
+        if (!base) {
+          responseView.textContent = "Base URL is required.";
+          return;
+        }
+
+        const url = `${base}${path}`;
+        const init = {
+          method: config.method,
+          headers: {}
+        };
+
+        if (config.method === "POST") {
+          try {
+            const parsed = JSON.parse(payloadEl.value || "{}");
+            init.headers["content-type"] = "application/json";
+            init.body = JSON.stringify(parsed);
+          } catch (error) {
+            responseView.textContent = `Invalid JSON payload: ${error.message}`;
+            return;
+          }
+        }
+
+        const start = performance.now();
+
+        try {
+          const res = await fetch(url, init);
+          const duration = (performance.now() - start).toFixed(2);
+          const text = await res.text();
+
+          let parsed;
+          try {
+            parsed = JSON.parse(text);
+          } catch {
+            parsed = { raw: text };
+          }
+
+          statusChip.textContent = `Status: ${res.status}`;
+          statusChip.classList.toggle("ok", res.status >= 200 && res.status < 300);
+          statusChip.classList.toggle("warn", res.status >= 400);
+          latencyChip.textContent = `Latency: ${duration} ms`;
+          responseView.textContent = JSON.stringify(parsed, null, 2);
+          updateResponseStats(parsed);
+        } catch (error) {
+          statusChip.textContent = "Status: request failed";
+          statusChip.classList.remove("ok");
+          statusChip.classList.add("warn");
+          latencyChip.textContent = "Latency: -";
+          responseView.textContent = `Network error: ${error.message}`;
+          updateResponseStats({});
+        }
+      }
+
+      endpointEl.addEventListener("change", updatePayloadFromEndpoint);
+      sendBtn.addEventListener("click", sendRequest);
+      sampleBtn.addEventListener("click", updatePayloadFromEndpoint);
+      clearBtn.addEventListener("click", () => {
+        payloadEl.value = "";
+        responseView.textContent = "Cleared.";
+        updateResponseStats({});
+      });
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(responseView.textContent);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => {
+            copyBtn.textContent = "Copy Response";
+          }, 1200);
+        } catch {
+          copyBtn.textContent = "Copy Failed";
+          setTimeout(() => {
+            copyBtn.textContent = "Copy Response";
+          }, 1200);
+        }
+      });
+      payloadEl.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+          event.preventDefault();
+          sendRequest();
+        }
+      });
+
+      updatePayloadFromEndpoint();
+    </script>
+  </body>
+</html>
