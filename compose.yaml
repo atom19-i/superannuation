@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: blk-superannuation-iti-dargar
+    image: blk-hacking-ind-iti-dargar
     ports:
       - "5477:5477"
     environment:

@@ -1,4 +1,4 @@
-# docker build -t blk-superannuation-iti-dargar .
+# docker build -t blk-hacking-ind-iti-dargar .
 # Base OS selection criteria: Alpine Linux is used for a minimal, secure runtime footprint.
 FROM node:22-alpine
 

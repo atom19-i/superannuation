@@ -25,12 +25,12 @@ npm test
 ## Docker
 Build:
 ```bash
-docker build -t blk-superannuation-iti-dargar .
+docker build -t blk-hacking-ind-iti-dargar .
 ```
 
 Run:
 ```bash
-docker run -d -p 5477:5477 blk-superannuation-iti-dargar
+docker run -d -p 5477:5477 blk-hacking-ind-iti-dargar
 ```
 
 Compose:
